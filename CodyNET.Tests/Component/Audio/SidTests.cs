@@ -19,7 +19,6 @@ public class SidTests
 
         Assert.That(sid.Read(0xD400), Is.EqualTo(0x05));
     }
-
     private static SoundInterfaceDevice CreateSoundInterfaceDevice(Memory memory)
     {
         var sid = new SoundInterfaceDevice();
