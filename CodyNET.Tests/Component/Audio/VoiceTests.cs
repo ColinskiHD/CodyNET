@@ -12,10 +12,10 @@ public class VoiceTests
     public void Voice_CombineFrequencyLOandHIBytes()
     {
         byte[] _voiceMemory = new byte[0x100];
+        Voice voice = new Voice(0xD400, _voiceMemory, 0x00);
+
         _voiceMemory[0x00] = 0xD6;//LO BYTE
         _voiceMemory[0x01] = 0x1C;//HI BYTE
-
-        Voice voice = new Voice(0xD400, _voiceMemory, 0x00);
 
         Assert.That(voice.Frequency, Is.EqualTo(0x1CD6));
     }
