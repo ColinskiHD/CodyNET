@@ -24,4 +24,31 @@ public class Voice
     }
     public ushort Frequency => (ushort)((_voiceMemory[FREQ_HI + VOICE_OFFSET] << 8) | _voiceMemory[FREQ_LO + VOICE_OFFSET]);//not aquivalent to Hz
     public ushort Pwm => (ushort)((_voiceMemory[PWM_HI + VOICE_OFFSET] << 8) | _voiceMemory[PWM_LO + VOICE_OFFSET]);
+
+    // === Control Bits ===
+
+    /// <summary> Bit 0 ("gate") plays/ends the sound. </summary>
+    public bool Gate => (_voiceMemory[CONTROL + VOICE_OFFSET] & 0x01) != 0;
+    /// <summary> Bit 1 syncs with other voice.
+    /// voice 1 -> with voice 3. 
+    /// voice 2 -> with voice 1. 
+    /// voice 3 -> with voice 2.
+    /// </summary>
+    public bool Sync => (_voiceMemory[CONTROL + VOICE_OFFSET] & 0x02) != 0;
+    /// <summary> Bit 2 enables ring modulation with other voice
+    /// voice 1 -> with voice 3. 
+    /// voice 2 -> with voice 1. 
+    /// voice 3 -> with voice 2. 
+    /// </summary>
+    public bool RingMod => (_voiceMemory[CONTROL + VOICE_OFFSET] & 0x04) != 0;
+    /// <summary> Bit 3 resets the voice internally. </summary>
+    public bool Reset => (_voiceMemory[CONTROL + VOICE_OFFSET] & 0x08) != 0;
+    /// <summary> Bit 4 selects a triangle wave. </summary>
+    public bool Triangle => (_voiceMemory[CONTROL + VOICE_OFFSET] & 0x10) != 0;
+    /// <summary> Bit 5 selects a sawtooth wave. </summary>
+    public bool Saw => (_voiceMemory[CONTROL + VOICE_OFFSET] & 0x20) != 0;
+    /// <summary> Bit 6 selects a pulse wave. </summary>
+    public bool Pulse => (_voiceMemory[CONTROL + VOICE_OFFSET] & 0x40) != 0;
+    /// <summary> Bit 7 selects a random noise output. </summary>
+    public bool Noise => (_voiceMemory[CONTROL + VOICE_OFFSET] & 0x80) != 0;
 }
