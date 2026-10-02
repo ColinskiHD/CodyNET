@@ -51,4 +51,8 @@ public class Voice
     public bool Pulse => (_voiceMemory[CONTROL + VOICE_OFFSET] & 0x40) != 0;
     /// <summary> Bit 7 selects a random noise output. </summary>
     public bool Noise => (_voiceMemory[CONTROL + VOICE_OFFSET] & 0x80) != 0;
+    public ushort Attack => (ushort)((_voiceMemory[ATTACK_DECAY + VOICE_OFFSET] >> 4) & 0x0F);//high nibble
+    public ushort Decay => (ushort)(_voiceMemory[ATTACK_DECAY + VOICE_OFFSET] & 0x0F);//low nibble
+    public ushort Sustain => (ushort)(_voiceMemory[SUSTAIN_RELEASE + VOICE_OFFSET] >> 4);//high nibble
+    public ushort Release => (ushort)(_voiceMemory[SUSTAIN_RELEASE + VOICE_OFFSET] & 0x0F);//low nibble
 }
