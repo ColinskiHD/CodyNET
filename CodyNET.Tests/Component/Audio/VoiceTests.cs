@@ -19,4 +19,16 @@ public class VoiceTests
 
         Assert.That(voice.Frequency, Is.EqualTo(0x1CD6));
     }
+
+    [Test]
+    public void Voice_CombinePwmLOandHIBytes()
+    {
+        byte[] _voiceMemory = new byte[0x100];
+        Voice voice = new Voice(0xD400, _voiceMemory, 0x00);
+
+        _voiceMemory[0x02] = 0xD6;//LO BYTE
+        _voiceMemory[0x03] = 0x1C;//HI BYTE
+
+        Assert.That(voice.Pwm, Is.EqualTo(0x1CD6));
+    }
 }

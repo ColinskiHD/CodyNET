@@ -23,4 +23,5 @@ public class Voice
         _voiceMemory = _memory;
     }
     public ushort Frequency => (ushort)((_voiceMemory[FREQ_HI + VOICE_OFFSET] << 8) | _voiceMemory[FREQ_LO + VOICE_OFFSET]);//not aquivalent to Hz
+    public ushort Pwm => (ushort)((_voiceMemory[PWM_HI + VOICE_OFFSET] << 8) | _voiceMemory[PWM_LO + VOICE_OFFSET]);
 }
