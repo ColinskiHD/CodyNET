@@ -6,6 +6,15 @@ public class SoundInterfaceDevice : IAudioDevice
 {
     // Store sound memory locally in the device, for easy access
     private readonly byte[] _soundMemory = new byte[0x100];// TODO: check if length is correct
+    private readonly Voice[] _voices;
+    public IReadOnlyList<Voice> Voices => _voices;
+
+    public SoundInterfaceDevice()
+    {
+        _voices = [new Voice(SID_BASE, _soundMemory, VOICE1_OFFSET),
+                   new Voice(SID_BASE, _soundMemory, VOICE2_OFFSET),
+                   new Voice(SID_BASE, _soundMemory, VOICE3_OFFSET)];
+    }
     // === IMemoryMappedDevice ===
     public ushort StartAddress => SID_BASE;
     public ushort EndAddress => 0xD41C;// TODO: Figure out if this number is correct
@@ -14,54 +23,13 @@ public class SoundInterfaceDevice : IAudioDevice
 
     // === Address Constants ===
     public const ushort SID_BASE = 0xD400;
-    public const ushort VOICE1_BASE = 0xD400;
-    public const ushort VOICE2_BASE = 0xD407;
-    public const ushort VOICE3_BASE = 0xD40E;
+    public const ushort VOICE1_OFFSET = 0x00;
+    public const ushort VOICE2_OFFSET = 0x07;
+    public const ushort VOICE3_OFFSET = 0x0E;
     /*
         // === Control Registers ===
         //Addresses taken from cody_audio.spin hardware implementation
-        // ' $D400     Voice 1 frequency low byte
-        private const ushort VOICE1_FREQ_LO = 0xD400;
-        // ' $D401     Voice 1 frequency high byte
-        private const ushort VOICE1_FREQ_HI = 0xD401;
-        // ' $D402     Voice 1 pulse duty cycle low byte
-        private const ushort VOICE1_PWM_DUTY_LO = 0xD402;
-        // ' $D403     Voice 1 pulse duty cycle high byte (nibble)
-        private const ushort VOICE1_PWM_DUTY_HI = 0xD403;
-        // ' $D404     Voice 1 control register
-        private const ushort VOICE1_CONTROL = 0xD404;
-        // ' $D405     Voice 1 attack (high nibble) and decay (low nibble)
-        private const ushort VOICE1_ATTACK_DECAY = 0xD405;
-        // ' $D406     Voice 1 sustain (high nibble) and release (low nibble)
-        private const ushort VOICE1_SUSTAIN_RELEASE = 0xD406;
-        // ' $D407     Voice 2 frequency low byte
-        private const ushort VOICE2_FREQ_LO = 0xD407;
-        // ' $D408     Voice 2 frequency high byte
-        private const ushort VOICE2_FREQ_HI = 0xD408;
-        // ' $D409     Voice 2 pulse duty cycle low byte
-        private const ushort VOICE2_PWM_DUTY_LO = 0xD409;
-        // ' $D40A     Voice 2 pulse duty cycle high byte (nibble)
-        private const ushort VOICE2_PWM_DUTY_HI = 0xD40A;
-        // ' $D40B     Voice 2 control register
-        private const ushort VOICE2_CONTROL = 0xD40B;
-        // ' $D40C     Voice 2 attack (high nibble) and decay (low nibble)
-        private const ushort VOICE2_ATTACK_DECAY = 0xD40C;
-        // ' $D40D     Voice 2 sustain (high nibble) and release (low nibble)
-        private const ushort VOICE2_SUSTAIN_RELEASE = 0xD40D;
-        // ' $D40E     Voice 3 frequency low byte
-        private const ushort VOICE3_FREQ_LO = 0xD40E;
-        // ' $D40F     Voice 3 frequency high byte
-        private const ushort VOICE3_FREQ_HI = 0xD40F;
-        // ' $D410     Voice 3 pulse duty cycle low byte
-        private const ushort VOICE3_PWM_DUTY_LO = 0xD410;
-        // ' $D411     Voice 3 pulse duty cycle high byte (nibble)
-        private const ushort VOICE3_PWM_DUTY_HI = 0xD411;
-        // ' $D412     Voice 3 control register
-        private const ushort VOICE3_CONTROL = 0xD412;
-        // ' $D413     Voice 3 attack (high nibble) and decay (low nibble)
-        private const ushort VOICE3_ATTACK_DECAY = 0xD413;
-        // ' $D414     Voice 3 sustain (high nibble) and release (low nibble)
-        private const ushort VOICE3_SUSTAIN_RELEASE = 0xD414;
+        [...]
         // ' $D415     Reserved (filters?)
         private const ushort UNUSED1 = 0xD415;
         // ' $D416     Reserved (filters?)
