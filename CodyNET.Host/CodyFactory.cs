@@ -29,6 +29,7 @@ public static class CodyFactory
 
     private static Cody CreateCody(CodySetupOptions options, bool launchScreenHost)
     {
+        FrontendHostBridge.DebugMode = options.EnableDebugger;
         IScreenDevice? screen = null;
         IVideoDevice? video = null;
         if (options.EnableScreen)
@@ -43,7 +44,6 @@ public static class CodyFactory
         {
             FrontendHostBridge.SetKeyboard(cody.Keyboard);
         }
-        FrontendHostBridge.DebugMode = options.EnableDebugger;
         if (options.EnableDebugger && cody.Debugger != null)
         {
             FrontendHostBridge.SetDebugger(cody.Debugger);
