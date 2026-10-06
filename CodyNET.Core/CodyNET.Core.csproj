@@ -5,6 +5,14 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+    
+    <PropertyGroup>
+        <SDL3CSVersion>3.4.14.1</SDL3CSVersion>
+        <SDL3CSImageVersion>3.4.4.10</SDL3CSImageVersion>
+        <SDL3CSMixerVersion>3.2.4.9</SDL3CSMixerVersion>
+        <SDL3CSTTFVersion>3.2.2.1</SDL3CSTTFVersion>
+        <SDL3CSShadercrossVersion>3.0.0.1</SDL3CSShadercrossVersion>
+    </PropertyGroup>
 
     <ItemGroup>
       <None Update="Assembler\64tass\win\64tass.exe">
@@ -24,5 +32,11 @@
     <ItemGroup>
       <EmbeddedResource Include="Roms\codybasic.bin" />
     </ItemGroup>
+
+    <ItemGroup>
+    <PackageReference Include="SDL3-CS" Version="3.4.16.1" />
+    <PackageReference Include="SDL3-CS.Windows" Version="3.4.16" />
+    <PackageReference Include="SDL3-CS.Linux" Version="3.4.16" />
+  </ItemGroup>
 
 </Project>

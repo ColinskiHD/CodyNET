@@ -3,6 +3,7 @@ using CodyNET.Common.Utils;
 using CodyNET.Common.Video;
 using CodyNET.Core.Cody;
 using CodyNET.Core.Devices;
+using CodyNET.Core.Devices.Audio;
 using CodyNET.Core.Interfaces;
 using CodyNET.Frontend;
 
@@ -32,13 +33,15 @@ public static class CodyFactory
         FrontendHostBridge.DebugMode = options.EnableDebugger;
         IScreenDevice? screen = null;
         IVideoDevice? video = null;
+        IAudioDevice? audio = null;
         if (options.EnableScreen)
         {
             screen = launchScreenHost ? CreateScreen() : WaitForScreen();
             video = new VideoDevice();
+            audio = new SoundInterfaceDevice(new SDLAudioOutput());
         }
 
-        Cody cody = new(options, video, screen);
+        Cody cody = new(options, video, screen, audio);
         RegisterBindings(cody);
         if (options.EnableScreen && cody.Keyboard != null)
         {

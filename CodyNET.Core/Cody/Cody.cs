@@ -7,6 +7,7 @@ using CodyNET.Core.Devices;
 using CodyNET.Core.Interfaces;
 using CodyNET.Core.Roms;
 using Debugger = CodyNET.Core.Devices.Debugger;
+using System.Reflection.Metadata.Ecma335;
 
 namespace CodyNET.Core.Cody;
 
@@ -51,13 +52,14 @@ public class Cody
     public Memory Memory => Cpu.Memory;
     public Debugger? Debugger { get; private set; }
     public IVideoDevice? VID { get; private set; }
+    public IAudioDevice? SID { get; private set; }
     public VersatileInterfaceAdapter? VIA { get; init; }
     public Keyboard? Keyboard { get; private set; }
     public UartDevice Uart1 { get; private set; }
     public UartDevice Uart2 { get; private set; }
     public IScreenDevice? Screen { get; init; }
     public Profiler? Profiler;
-    
+
     private int _allowedSteps = -1; // -1 = Normal running, 0 = Paused, 1 = Single Step Mode
     private readonly ManualResetEventSlim _resumeEvent = new(initialState: true); // true = open (running)
 
@@ -77,15 +79,16 @@ public class Cody
     }
 
     // TODO: Cody shouldn't need setup options, as Factory create devices based on options and passes them in. Refactor to remove this dependency.
-    public Cody(CodySetupOptions options, IVideoDevice? videoDevice = null, IScreenDevice? screen = null)
+    public Cody(CodySetupOptions options, IVideoDevice? videoDevice = null, IScreenDevice? screen = null, IAudioDevice? audioDevice = null)
     {
         if (options.StartPaused)
         {
             Pause();
         }
         VID = videoDevice;
+        SID = audioDevice;
         Screen = screen;
-        
+
         // 1. Set up CPU (and memory)
         // CPU also initializes memory
         Cpu = new Cpu
@@ -121,7 +124,7 @@ public class Cody
         {
             UsePhysicalKeyboard = options.PhysicalKeyboard
         };
-        
+
         // Uart Setup: Uart1 is prop plug, Uart2 is extension port (cartridge)
         Uart1 = new UartDevice(0xD480);
         Memory.RegisterDevice(Uart1);
@@ -132,7 +135,11 @@ public class Cody
         {
             Memory.RegisterDevice(VID);
         }
-        
+        if (SID != null)
+        {
+            Memory.RegisterDevice(SID);
+        }
+
         Log.Info("Cody Setup complete");
     }
 
@@ -145,7 +152,7 @@ public class Cody
     {
         return Cpu.Step();
     }
-    
+
     public void Pause()
     {
         _allowedSteps = 0;
@@ -216,7 +223,7 @@ public class Cody
         Cpu.TotalCyclesExecuted = 0;
         return cycles;
     }
-    
+
     private void CheckFilePath(FileInfo? file)
     {
         if (file is null)
@@ -255,11 +262,11 @@ public class Cody
         var bytes = File.ReadAllBytes(options.File!.FullName);
         LoadBinary(bytes, options);
     }
-    
+
     public void LoadBinary(byte[] bytes, CodyLoadOptions? options = null)
     {
         if (bytes is null) throw new ArgumentNullException(nameof(bytes));
-        
+
         options ??= new CodyLoadOptions();
 
         if (options.Uart1Source != null) // TODO: Check if this is the right place to load UART source
@@ -277,11 +284,11 @@ public class Cody
     public void LoadAssemblyFile(CodyLoadOptions loadOptions)
     {
         CheckFilePath(loadOptions.File);
-        
+
         var program = CodyAssembler.AssembleFileToBytes(loadOptions.File!);
         LoadBinary(program, loadOptions);
     }
-    
+
     public void RunBinaryFile(CodyLoadOptions loadOptions)
     {
         CheckFilePath(loadOptions.File);
@@ -290,7 +297,7 @@ public class Cody
         var bytes = File.ReadAllBytes(loadOptions.File!.FullName);
         RunBinary(bytes, loadOptions);
     }
-    
+
     public void RunBinary(byte[] bytes, CodyLoadOptions loadOptions)
     {
         LoadBinary(bytes, loadOptions);
@@ -301,12 +308,12 @@ public class Cody
     public void RunAssemblyFile(CodyLoadOptions loadOptions)
     {
         CheckFilePath(loadOptions.File);
-        
+
         LoadAssemblyFile(loadOptions);
         Reset();
         RunUntilFinish();
     }
-    
+
     /// <summary>
     /// Boots the machine by loading the built-in CodyBASIC ROM.
     /// </summary>
@@ -334,7 +341,7 @@ public class Cody
     public void LoadImage(byte[] data, ushort loadAddress)
     {
         if (data is null) throw new ArgumentNullException(nameof(data));
-        
+
         Memory.LoadBytes(data, loadAddress);
     }
 
