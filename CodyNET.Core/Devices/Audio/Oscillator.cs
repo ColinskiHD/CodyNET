@@ -15,6 +15,7 @@
                 testn   temp_phase, MASK_16                 wz
                 muxnz   sync, #$02
 */
+using System.Runtime.CompilerServices;
 using CodyNET.Core.Devices.Audio;
 
 public class Oscillator
@@ -22,6 +23,7 @@ public class Oscillator
     public ushort Phase { get; private set; }
     public bool Overflowed { get; private set; }
     public ushort Wave { get; private set; }
+    private const ushort MASK_16 = 0xFFFF;
     public void Step(ushort frequency, Waveform waveform)
     {
         int freq_coefficient = frequency >> 2;
@@ -30,10 +32,31 @@ public class Oscillator
         //TODO: noise logic with next_phase and Phase
         switch (waveform)//TODO: implement all waveforms
         {
+            case Waveform.Triangle:
+                Wave = Triangle(Phase);
+                break;
+            case Waveform.Sawtooth:
+                Wave = Sawtooth(Phase);
+                break;
             default:
-                Wave = Phase;//Sawtooth
+                Wave = 0x8000;//TODO: check if this is correct
                 break;
         }
         Phase = (ushort)next_phase;
+    }
+
+    private static ushort Sawtooth(ushort Phase)
+    {
+        return Phase;
+    }
+    private static ushort Triangle(ushort Phase)
+    {
+        bool bit_15 = (Phase & 0x8000) != 0;
+        ushort wave = (ushort)(Phase << 1);
+        if (bit_15)
+        {
+            wave = (ushort)(MASK_16 ^ wave);
+        }
+        return wave;
     }
 }
