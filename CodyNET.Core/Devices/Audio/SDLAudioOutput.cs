@@ -72,11 +72,11 @@ public class SDLAudioOutput : IAudioOutput
         {
             return;
         }
-        Buffer.BlockCopy(_buffer, 0, _bytes, 0, _bytes.Length);//convert short array to byte array
+        Buffer.BlockCopy(_buffer, 0, _bytes, 0, _bytes.Length);//converts short array to byte array
         SDL.PutAudioStreamData(_stream, _bytes, _bytes.Length);
     }
 
-    private void Cleanup()//TODO: figure out if and from where this should be called
+    private void Cleanup()//TODO: figure out if and from where this funcion should be called
     {
         if (_stream == IntPtr.Zero)
         {

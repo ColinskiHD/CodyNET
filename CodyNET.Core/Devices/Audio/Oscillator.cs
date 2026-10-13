@@ -24,12 +24,13 @@ public class Oscillator
     public bool Overflowed { get; private set; }
     public ushort Wave { get; private set; }
     private const ushort MASK_16 = 0xFFFF;
-    public void Step(ushort frequency, Waveform waveform)
+    private const ushort PHASEBIT_NOISE = 0x4000;// Phase accumulator bit to check when generating noise values
+    public void Step(ushort frequency, Waveform waveform, ushort noise, ushort pwm = 0)
     {
         int freq_coefficient = frequency >> 2;
-        int next_phase = Phase + freq_coefficient;
-        Overflowed = next_phase > 0xFFFF;
-        //TODO: noise logic with next_phase and Phase
+        int temp_phase = Phase + freq_coefficient;
+        Overflowed = temp_phase > 0xFFFF;
+        //TODO: noise logic with temp_phase and Phase
         switch (waveform)//TODO: implement all waveforms
         {
             case Waveform.Triangle:
@@ -38,11 +39,16 @@ public class Oscillator
             case Waveform.Sawtooth:
                 Wave = Sawtooth(Phase);
                 break;
+            case Waveform.Pulse:
+                Wave = Pulse(Phase, pwm);
+                break;
+            case Waveform.Noise:
+                Wave = Noise(Phase, noise, temp_phase, Wave);
+                break;
             default:
-                Wave = 0x8000;//TODO: check if this is correct
                 break;
         }
-        Phase = (ushort)next_phase;
+        Phase = (ushort)temp_phase;
     }
 
     private static ushort Sawtooth(ushort Phase)
@@ -56,6 +62,30 @@ public class Oscillator
         if (bit_15)
         {
             wave = (ushort)(MASK_16 ^ wave);
+        }
+        return wave;
+    }
+
+    private static ushort Pulse(ushort Phase, ushort pwm)
+    {
+        pwm = (ushort)(pwm << 4);
+        bool high = Phase < pwm;
+        ushort wave = wave = 0x0000;
+        if (high)
+        {
+            wave = MASK_16;
+        }
+        return wave;
+    }
+
+    private static ushort Noise(ushort Phase, ushort noise, int temp_phase, ushort lastWave)
+    {
+        ushort wave = lastWave;
+        ushort temp = Phase;
+        temp = (ushort)(temp ^ temp_phase);
+        if ((temp & PHASEBIT_NOISE) != 0)
+        {
+            wave = noise;
         }
         return wave;
     }

@@ -2,7 +2,6 @@ using CodyNET.Core.Devices.Audio;
 using Serilog.Formatting.Display;
 public class Voice
 {
-
     private const ushort registerSize = 0x07;
     private int VOICE_OFFSET;
     private ushort END_ADDRESS;
@@ -15,8 +14,8 @@ public class Voice
     private const ushort ATTACK_DECAY = 0x05;
     private const ushort SUSTAIN_RELEASE = 0x06;
     private readonly byte[] _voiceMemory = new byte[0x07];
-    private readonly Oscillator _oscillator = new();
     public ushort Output { get; private set; }
+    public Oscillator _oscillator = new();
 
     public Voice(ushort baseAddress, byte[] _memory, ushort voiceOffset)
     {
@@ -64,9 +63,9 @@ public class Voice
         Pulse ? Waveform.Pulse :
         Noise ? Waveform.Noise :
         Waveform.None;
-    public void Step()
+    public void Step(ushort noise)
     {
-        _oscillator.Step(Frequency, WaveformSelected);
+        _oscillator.Step(Frequency, WaveformSelected, noise, Pwm);
         Output = _oscillator.Wave;
     }
 }

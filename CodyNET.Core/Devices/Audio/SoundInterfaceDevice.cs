@@ -1,4 +1,5 @@
 using CodyNET.Core.Cody;
+using CodyNET.Core.Devices.Audio;
 using CodyNET.Core.Interfaces;
 
 public class SoundInterfaceDevice : IAudioDevice
@@ -21,6 +22,7 @@ public class SoundInterfaceDevice : IAudioDevice
     public const ushort VOICE1_OFFSET = 0x00;
     public const ushort VOICE2_OFFSET = 0x07;
     public const ushort VOICE3_OFFSET = 0x0E;
+    private readonly NoiseGenerator _noiseGenerator = new();
     private readonly IAudioOutput? _audioOutput;
     /*
         // === Control Registers ===
@@ -82,8 +84,11 @@ public class SoundInterfaceDevice : IAudioDevice
     }
     private void GenerateSample()
     {
-        _voices[0].Step();//TODO: impelement update for all voices. 
+        _noiseGenerator.Step();
+        ushort noise = _noiseGenerator.Value;
+        _voices[0].Step(noise);//TODO: impelement update for all voices. 
         short sample = (short)(_voices[0].Output - 0x8000);//cast ushort to short 
+        //TODO: this should be mixer logic
         _audioOutput?.RenderSample(sample);
     }
 }
