@@ -7,6 +7,7 @@ public class SoundInterfaceDevice : IAudioDevice
     // Store sound memory locally in the device, for easy access
     private readonly byte[] _soundMemory = new byte[0x100];// TODO: check if length is correct
     private readonly Voice[] _voices;
+    private readonly NoiseGenerator _noiseGenerator = new();
     public IReadOnlyList<Voice> Voices => _voices;
     private long _lastcycle;
     private readonly long _CPU_HZ = 1_000_000;//1Mhz
@@ -22,7 +23,6 @@ public class SoundInterfaceDevice : IAudioDevice
     public const ushort VOICE1_OFFSET = 0x00;
     public const ushort VOICE2_OFFSET = 0x07;
     public const ushort VOICE3_OFFSET = 0x0E;
-    private readonly NoiseGenerator _noiseGenerator = new();
     private readonly IAudioOutput? _audioOutput;
     /*
         // === Control Registers ===

@@ -16,6 +16,7 @@ public class Voice
     private readonly byte[] _voiceMemory = new byte[0x07];
     public ushort Output { get; private set; }
     public Oscillator _oscillator = new();
+    private readonly EnvelopeGenerator _envelopeGenerator = new();
 
     public Voice(ushort baseAddress, byte[] _memory, ushort voiceOffset)
     {
@@ -66,6 +67,7 @@ public class Voice
     public void Step(ushort noise)
     {
         _oscillator.Step(Frequency, WaveformSelected, noise, Pwm);
-        Output = _oscillator.Wave;
+        _envelopeGenerator.Step(Attack, Decay, Sustain, Release, Gate);
+        Output = (ushort)(_oscillator.Wave * _envelopeGenerator.Envelope >> 16);
     }
 }
