@@ -7,6 +7,7 @@ public class SoundInterfaceDevice : IAudioDevice
     // Store sound memory locally in the device, for easy access
     private readonly byte[] _soundMemory = new byte[0x100];// TODO: check if length is correct
     private readonly Voice[] _voices;
+    private readonly NoiseGenerator _noiseGenerator = new();
     public IReadOnlyList<Voice> Voices => _voices;
     private Mixer _mixer = new();
     private long _lastcycle;
@@ -68,7 +69,11 @@ public class SoundInterfaceDevice : IAudioDevice
     }
     private void GenerateSample()
     {
-        short sample = _mixer.Step(_voices, VolumeControl);
+        _noiseGenerator.Step();
+        foreach (var voice in _voices)
+            voice.Step(_noiseGenerator.Value);
+
+        short sample = _mixer.Step(_voices[0].Output, _voices[1].Output, _voices[2].Output, VolumeControl);
         _audioOutput?.RenderSample(sample);
     }
 }

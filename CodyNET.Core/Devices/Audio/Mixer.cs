@@ -1,24 +1,21 @@
-using CodyNET.Core.Devices.Audio;
 namespace CodyNET.Core.Devices.Audio;
 
 public class Mixer
 {
-    private readonly NoiseGenerator _noiseGenerator = new();
+
     private ushort _volumeControl;
+    public ushort MainVolume => (ushort)(_volumeControl & 0x0F);
     public bool Voice3Off => (_volumeControl & 0x80) != 0;
-    public short Step(Voice[] voices, ushort volumeControl)
+    public short Step(ushort voice1, ushort voice2, ushort voice3, ushort volumeControl)
     {
         _volumeControl = volumeControl;
 
-        _noiseGenerator.Step();
-        foreach (var voice in voices)
-            voice.Step(_noiseGenerator.Value);
+        int sum = voice1 + voice2;
+        if (!Voice3Off)
+            sum += voice3;
+        sum = (MainVolume * sum) >> 4;
 
-        int sum = (ushort)(voices[0].Output + voices[1].Output);
-        if (Voice3Off)
-            sum += voices[2].Output;
-
-        short sample = (short)(sum - 0x8000);//cast to short
+        short sample = (short)(sum - 0x8000);
         return sample;
     }
 }
