@@ -59,9 +59,9 @@ public class EnvelopeGenerator
     }
     private int Release(int amplitude, int release)
     {
-        if (amplitude - DecayRates[release] <= 0x0000)
+        if (amplitude - DecayRates[release] <= 0)
         {
-            return 0x0000;
+            return 0;
         }
         return amplitude - DecayRates[release];
     }

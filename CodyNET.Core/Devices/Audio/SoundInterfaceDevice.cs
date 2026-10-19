@@ -7,8 +7,8 @@ public class SoundInterfaceDevice : IAudioDevice
     // Store sound memory locally in the device, for easy access
     private readonly byte[] _soundMemory = new byte[0x100];// TODO: check if length is correct
     private readonly Voice[] _voices;
-    private readonly NoiseGenerator _noiseGenerator = new();
     public IReadOnlyList<Voice> Voices => _voices;
+    private Mixer _mixer = new();
     private long _lastcycle;
     private readonly long _CPU_HZ = 1_000_000;//1Mhz
     private long _sampleAcc;
@@ -23,27 +23,11 @@ public class SoundInterfaceDevice : IAudioDevice
     public const ushort VOICE1_OFFSET = 0x00;
     public const ushort VOICE2_OFFSET = 0x07;
     public const ushort VOICE3_OFFSET = 0x0E;
+    private const ushort VOLUME_REGISTER = 0x18;
     private readonly IAudioOutput? _audioOutput;
-    /*
-        // === Control Registers ===
-        //Addresses taken from cody_audio.spin hardware implementation
-        [...]
-        // ' $D415     Reserved (filters?)
-        private const ushort UNUSED1 = 0xD415;
-        // ' $D416     Reserved (filters?)
-        private const ushort UNUSED2 = 0xD416;
-        // ' $D417     Reserved (filters?)
-        private const ushort UNUSED3 = 0xD417;
-        // ' $D418     Volume control (filters?)
-        private const ushort VOLUME_CONTROL = 0xD418;
-        // ' $D419     Reserved
-        private const ushort UNUSED4 = 0xD419;
-        // ' $D41A     Reserved
-        private const ushort UNUSED5 = 0xD41A;
-        // ' $D41B     Voice 3 oscillator read
-        private const ushort VOICE3_OSC_READ = 0xD41B;
-        // ' $D41C     Voice 3 envelope read
-        private const ushort VOICE3_ENV_READ = 0xD41C;*/
+
+    private ushort VolumeControl => _soundMemory[VOLUME_REGISTER];
+
     public SoundInterfaceDevice(IAudioOutput? audioOutput = null)
     {
         _audioOutput = audioOutput;
@@ -84,11 +68,7 @@ public class SoundInterfaceDevice : IAudioDevice
     }
     private void GenerateSample()
     {
-        _noiseGenerator.Step();
-        ushort noise = _noiseGenerator.Value;
-        _voices[0].Step(noise);//TODO: impelement update for all voices. 
-        short sample = (short)(_voices[0].Output - 0x8000);//cast ushort to short 
-        //TODO: this should be mixer logic
+        short sample = _mixer.Step(_voices, VolumeControl);
         _audioOutput?.RenderSample(sample);
     }
 }
