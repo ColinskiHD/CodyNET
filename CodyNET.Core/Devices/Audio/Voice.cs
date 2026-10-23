@@ -68,6 +68,7 @@ public class Voice
     {
         _oscillator.Step(Frequency, WaveformSelected, noise, Pwm);
         _envelopeGenerator.Step(Attack, Decay, Sustain, Release, Gate);
-        Output = (ushort)(_oscillator.Wave * _envelopeGenerator.Envelope >> 16);
+        ushort wave = _oscillator.Wave;
+        Output = (ushort)(wave * _envelopeGenerator.Envelope >> 16);
     }
 }
