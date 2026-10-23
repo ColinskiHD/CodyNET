@@ -23,9 +23,9 @@ public class OscillatorTests
         Step(osc, (ushort)remaining, waveform, noise, pwm);
     }
 
-    private static void updatePhase(Oscillator osc, Waveform waveform)
+    private static void updatePhase(Oscillator osc, Waveform waveform, ushort noise = 0, ushort pwm = 0)
     {
-        Step(osc, 0x0000, waveform);//only needed because values are updated after Step.
+        Step(osc, 0x0000, waveform, noise, pwm);//only needed because values are updated after Step.
     }
     [TestCase(0, 0, TestName = "Osc_0Hz_Saw")]
     [TestCase(3, 0, TestName = "Osc_3Hz_Phase_should_Shift_To_Zero")]
@@ -63,72 +63,49 @@ public class OscillatorTests
         Step(osc, (ushort)frequency, Waveform.Sawtooth);
         Assert.That(osc.Phase, Is.EqualTo(expected));
     }
-
-
-
-
-    /*[TestCase(0x8000, 0xFFFF, TestName = "Triangle_Peaks_At_Half_Phase")]
-    public void PhaseTest(int frequency, int expected)
-    {
-        var osc = new Oscillator();
-
-        StepPhaseTo(osc, frequency, Waveform.Triangle);
-
-        Step(osc, 0x0000, Waveform.Triangle);//only needed to update Wave. Has no effect on test
-
-
-        Assert.That(osc.Wave, Is.EqualTo(expected));
-    }*/
-
-    /*[Test]
-    public void Osc_440Hz_Triangle()
-    {
-        var osc = new Oscillator();
-
-        Step(osc, 7382, Waveform.Triangle);
-        updatePhase(osc);
-
-        Assert.That(osc.Wave, Is.EqualTo(3690));
-    }
-*/
+    [TestCase(Waveform.Pulse, 0x0000, 0, TestName = "PWM0_Is_LOW_At_Half_Phase")]
+    [TestCase(Waveform.Pulse, 0xFFFF, 0x0FFF, TestName = "PWM100_Is_HIGH_At_Half_Phase")]
     [TestCase(Waveform.Triangle, 0xFFFF, TestName = "Triangle_Is_OxFFFF_At_Half_Phase")]
-    public void Osc_Triangle_Peaks_At_Half_Phase(Waveform waveform, int expected)
+    public void Osc_Half_Phase(Waveform waveform, int expected, int pwm = 0)
     {
         var osc = new Oscillator();
 
-        Step(osc, 0xFFFF, waveform);
-        Step(osc, 0xFFFF, waveform);
-        Step(osc, 0x0008, waveform);//Phase at 0x8000
+        Step(osc, 0xFFFF, waveform, 0, (ushort)pwm);
+        Step(osc, 0xFFFF, waveform, 0, (ushort)pwm);
+        Step(osc, 0x0008, waveform, 0, (ushort)pwm);//Phase at 0x8000
 
-        updatePhase(osc, waveform);
+        updatePhase(osc, waveform, 0, (ushort)pwm);
 
         Assert.That(osc.Wave, Is.EqualTo(expected));
     }
-
+    [TestCase(Waveform.Pulse, 0x0000, 0, TestName = "PWM0_Is_LOW_At_Full_Phase")]
+    [TestCase(Waveform.Pulse, 0xFFFF, 0x0FFF, TestName = "PWM100_Is_HIGH_At_Full_Phase")]
     [TestCase(Waveform.Triangle, 0x0000, TestName = "Triangle_Is_0x0000_At_Full_Phase")]
-    public void Osc_Triangle_Peaks_At_Full_Phase(Waveform waveform, int expected)//TODO: this uses saw not triangle??
+    public void Osc_Full_Phase(Waveform waveform, int expected, int pwm = 0)
     {
         var osc = new Oscillator();
 
-        Step(osc, 0xFFFF, waveform);
-        Step(osc, 0xFFFF, waveform);
-        Step(osc, 0xFFFF, waveform);
-        Step(osc, 0xFFFF, waveform);
-        Step(osc, 0x0010, waveform);//Phase at 0xFFFF
+        Step(osc, 0xFFFF, waveform, 0, (ushort)pwm);
+        Step(osc, 0xFFFF, waveform, 0, (ushort)pwm);
+        Step(osc, 0xFFFF, waveform, 0, (ushort)pwm);
+        Step(osc, 0xFFFF, waveform, 0, (ushort)pwm);
+        Step(osc, 0x0010, waveform, 0, (ushort)pwm);//Phase at 0xFFFF
 
-        updatePhase(osc, waveform);//only needed to update Wave. Has no effect on test
+        updatePhase(osc, waveform, 0, (ushort)pwm);//only needed to update Wave. Has no effect on test
 
         Assert.That(osc.Wave, Is.EqualTo(expected));
     }
-
+    [TestCase(Waveform.Pulse, 0x0000, 0, TestName = "PWM0_Is_LOW")]
+    [TestCase(Waveform.Pulse, 0xFFFF, 0x0888, TestName = "PWM50_Is_HIGH")]
+    [TestCase(Waveform.Pulse, 0xFFFF, 0x0FFF, TestName = "PWM100_Is_HIGH")]
     [TestCase(Waveform.Triangle, 3690, TestName = "Osc_440Hz_Triangle")]
     [TestCase(Waveform.Sawtooth, 1845, TestName = "Osc_440Hz_Saw")]
-    public void Osc_440Hz(Waveform waveform, int expected)
+    public void Osc_440Hz(Waveform waveform, int expected, int pwm = 0)
     {
         var osc = new Oscillator();
 
-        Step(osc, 7382, waveform);
-        updatePhase(osc, waveform);
+        Step(osc, 7382, waveform, 0, (ushort)pwm);
+        updatePhase(osc, waveform, 0, (ushort)pwm);
 
         Assert.That(osc.Wave, Is.EqualTo(expected));
     }

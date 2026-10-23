@@ -70,7 +70,7 @@ public class Oscillator
     {
         pwm = (ushort)(pwm << 4);
         bool high = Phase < pwm;
-        ushort wave = wave = 0x0000;
+        ushort wave = 0x0000;
         if (high)
         {
             wave = MASK_16;
