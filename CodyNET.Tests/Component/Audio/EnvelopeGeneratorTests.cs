@@ -79,6 +79,7 @@ public class EnvelopeGeneratorTests
 
     [TestCase(15, 0x555555, TestName = "Hold_Sustain_15")]
     [TestCase(8, 0x2D82D8, TestName = "Hold_Sustain_8")]
+
     public void GateBitSetHoldsSustainAmplitude(int sustain, int expected)
     {
         var envelopeGenerator = SustainStateEnvelope();
@@ -87,6 +88,24 @@ public class EnvelopeGeneratorTests
         {
             Step(envelopeGenerator, true, 0, 0, (ushort)sustain, 0);
         }
+
+        Assert.That(envelopeGenerator.Amplitude, Is.EqualTo(expected));
+    }
+
+    [TestCase(8, 15, 0x2D82D8, TestName = "IncreaseSustain_Doesnt_Increase_Vol_After_Decay")]
+    public void Sustain_Increase(int sustain, int sustainIncreased, int expected)
+    {
+        var envelopeGenerator = SustainStateEnvelope();
+
+        for (int i = 0; i <= 16000 + 1; i++)
+        {
+            Step(envelopeGenerator, true, 0, 0, (ushort)sustain, 0);
+        }
+        for (int i = 0; i <= 1000 + 1; i++)
+        {
+            Step(envelopeGenerator, true, 0, 0, (ushort)sustainIncreased, 0);
+        }
+
 
         Assert.That(envelopeGenerator.Amplitude, Is.EqualTo(expected));
     }

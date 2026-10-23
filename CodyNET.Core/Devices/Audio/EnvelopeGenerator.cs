@@ -51,11 +51,12 @@ public class EnvelopeGenerator
     }
     private int Decay(int amplitude, int decay, int sustain)
     {
-        if (amplitude - DecayRates[decay] <= MAX_LEVEL * sustain / 15)
+        int sustainLevel = MAX_LEVEL * sustain / 15;
+        if (amplitude <= sustainLevel)
         {
-            return MAX_LEVEL * sustain / 15;
+            return amplitude;
         }
-        return amplitude - DecayRates[decay];
+        return Math.Max(amplitude - DecayRates[decay], sustainLevel);
     }
     private int Release(int amplitude, int release)
     {
