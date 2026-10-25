@@ -30,8 +30,7 @@ public class Oscillator
         int freq_coefficient = frequency >> 2;
         int temp_phase = Phase + freq_coefficient;
         Overflowed = temp_phase > 0xFFFF;
-        //TODO: noise logic with temp_phase and Phase
-        switch (waveform)//TODO: implement all waveforms
+        switch (waveform)
         {
             case Waveform.Triangle:
                 Wave = Triangle(Phase);

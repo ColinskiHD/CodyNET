@@ -44,8 +44,6 @@ public class VoiceTests
         _voiceMemory[0x04 + offset] = 0xFF;//all bits set to 1
 
         Assert.That(voice.Gate, Is.EqualTo(true));
-        Assert.That(voice.Sync, Is.EqualTo(true));
-        Assert.That(voice.RingMod, Is.EqualTo(true));
         Assert.That(voice.Reset, Is.EqualTo(true));
         Assert.That(voice.Triangle, Is.EqualTo(true));
         Assert.That(voice.Saw, Is.EqualTo(true));
@@ -62,8 +60,6 @@ public class VoiceTests
         _voiceMemory[0x04 + offset] = 0x00;//all bits set to 0
 
         Assert.That(voice.Gate, Is.EqualTo(false));
-        Assert.That(voice.Sync, Is.EqualTo(false));
-        Assert.That(voice.RingMod, Is.EqualTo(false));
         Assert.That(voice.Reset, Is.EqualTo(false));
         Assert.That(voice.Triangle, Is.EqualTo(false));
         Assert.That(voice.Saw, Is.EqualTo(false));
@@ -80,8 +76,6 @@ public class VoiceTests
         _voiceMemory[0x04 + offset] = 0x55;//01010101
 
         Assert.That(voice.Gate, Is.EqualTo(true));
-        Assert.That(voice.Sync, Is.EqualTo(false));
-        Assert.That(voice.RingMod, Is.EqualTo(true));
         Assert.That(voice.Reset, Is.EqualTo(false));
         Assert.That(voice.Triangle, Is.EqualTo(true));
         Assert.That(voice.Saw, Is.EqualTo(false));

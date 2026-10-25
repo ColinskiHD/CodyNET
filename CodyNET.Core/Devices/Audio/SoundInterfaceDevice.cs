@@ -25,6 +25,30 @@ public class SoundInterfaceDevice : IAudioDevice
     public const ushort VOICE2_OFFSET = 0x07;
     public const ushort VOICE3_OFFSET = 0x0E;
     private const ushort VOLUME_REGISTER = 0x18;
+    private const ushort CONTROL = 0x04;
+    /// <summary> Syncs with other voice.
+    /// voice 1 -> with voice 3. 
+    /// </summary>
+    public bool SyncVoice1 => (_soundMemory[CONTROL + VOICE1_OFFSET] & 0x02) != 0;
+    /// <summary> Enables ring modulation with other voice
+    /// voice 1 -> with voice 3. 
+    public bool RingModVoice1 => (_soundMemory[CONTROL + VOICE1_OFFSET] & 0x04) != 0;
+    /// <summary> Syncs with other voice.
+    /// voice 2 -> with voice 1. 
+    /// </summary>
+    public bool SyncVoice2 => (_soundMemory[CONTROL + VOICE2_OFFSET] & 0x02) != 0;
+    /// <summary> Enables ring modulation with other voice 
+    /// voice 2 -> with voice 1.  
+    /// </summary>
+    public bool RingModVoice2 => (_soundMemory[CONTROL + VOICE2_OFFSET] & 0x04) != 0;
+    /// <summary> Syncs with other voice.
+    /// voice 3 -> with voice 2.
+    /// </summary>
+    public bool SyncVoice3 => (_soundMemory[CONTROL + VOICE3_OFFSET] & 0x02) != 0;
+    /// <summary> Enables ring modulation with other voice
+    /// voice 3 -> with voice 2. 
+    /// </summary>
+    public bool RingModVoice3 => (_soundMemory[CONTROL + VOICE3_OFFSET] & 0x04) != 0;
     private readonly IAudioOutput? _audioOutput;
 
     private ushort VolumeControl => _soundMemory[VOLUME_REGISTER];

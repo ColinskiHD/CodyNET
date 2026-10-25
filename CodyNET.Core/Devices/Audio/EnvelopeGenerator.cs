@@ -71,6 +71,6 @@ public class EnvelopeGenerator
     {
         Attack,
         Decay,
-        Release,
+        Release
     }
 }
