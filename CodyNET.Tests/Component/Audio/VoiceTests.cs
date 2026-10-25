@@ -1,5 +1,8 @@
+using System.Runtime.CompilerServices;
+using Avalonia.Metadata;
 using CodyNET.Core.Cody;
 using CodyNET.Core.Devices;//decide if .Devices.Audio is better
+using JetBrains.Annotations;
 using NUnit.Framework;
 
 namespace CodyNET.Tests.Component;
@@ -35,52 +38,17 @@ public class VoiceTests
         Assert.That(voice.Pwm, Is.EqualTo(0x1CD6));
     }
 
-    [TestCase(V2_OFFSET, TestName = "{m} (Voice 2)")]
-    public void Voice_ControlBitsSet(ushort offset)
+    [TestCase(V2_OFFSET, 0xFF, new bool[] { true, true, true, true, true, true }, TestName = "Voice_ControlBitsSet (Voice 2)")]
+    [TestCase(V2_OFFSET, 0x00, new bool[] { false, false, false, false, false, false }, TestName = "Voice_ControlBitsNotSet (Voice 2)")]
+    [TestCase(V2_OFFSET, 0x55, new bool[] { true, false, true, false, true, false }, TestName = "Voice_ControlBitsSomeSet (Voice 2)")]
+    public void Voice_ControlBitsSet(ushort offset, int values, bool[] expected)
     {
         byte[] _voiceMemory = new byte[0x100];
         Voice voice = new Voice(SID_BASE, _voiceMemory, offset);
 
-        _voiceMemory[0x04 + offset] = 0xFF;//all bits set to 1
+        _voiceMemory[0x04 + offset] = (byte)values;
 
-        Assert.That(voice.Gate, Is.EqualTo(true));
-        Assert.That(voice.Reset, Is.EqualTo(true));
-        Assert.That(voice.Triangle, Is.EqualTo(true));
-        Assert.That(voice.Saw, Is.EqualTo(true));
-        Assert.That(voice.Pulse, Is.EqualTo(true));
-        Assert.That(voice.Noise, Is.EqualTo(true));
-    }
-
-    [TestCase(V2_OFFSET, TestName = "{m} (Voice 2)")]
-    public void Voice_ControlBitsNotSet(ushort offset)
-    {
-        byte[] _voiceMemory = new byte[0x100];
-        Voice voice = new Voice(SID_BASE, _voiceMemory, offset);
-
-        _voiceMemory[0x04 + offset] = 0x00;//all bits set to 0
-
-        Assert.That(voice.Gate, Is.EqualTo(false));
-        Assert.That(voice.Reset, Is.EqualTo(false));
-        Assert.That(voice.Triangle, Is.EqualTo(false));
-        Assert.That(voice.Saw, Is.EqualTo(false));
-        Assert.That(voice.Pulse, Is.EqualTo(false));
-        Assert.That(voice.Noise, Is.EqualTo(false));
-    }
-
-    [TestCase(V2_OFFSET, TestName = "{m} (Voice 2)")]
-    public void Voice_ControlBitsSomeSet(ushort offset)
-    {
-        byte[] _voiceMemory = new byte[0x100];
-        Voice voice = new Voice(SID_BASE, _voiceMemory, offset);
-
-        _voiceMemory[0x04 + offset] = 0x55;//01010101
-
-        Assert.That(voice.Gate, Is.EqualTo(true));
-        Assert.That(voice.Reset, Is.EqualTo(false));
-        Assert.That(voice.Triangle, Is.EqualTo(true));
-        Assert.That(voice.Saw, Is.EqualTo(false));
-        Assert.That(voice.Pulse, Is.EqualTo(true));
-        Assert.That(voice.Noise, Is.EqualTo(false));
+        Assert.That(new bool[] { voice.Gate, voice.Reset, voice.Triangle, voice.Saw, voice.Pulse, voice.Noise }, Is.EqualTo(expected));
     }
 
     [TestCase(V2_OFFSET, TestName = "{m} (Voice 2)")]
