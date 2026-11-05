@@ -88,4 +88,8 @@ public class Oscillator
         }
         return wave;
     }
+    public void ResetPhase()
+    {
+        Phase = 0;
+    }
 }

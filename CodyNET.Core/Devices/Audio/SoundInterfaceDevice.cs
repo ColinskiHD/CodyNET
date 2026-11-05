@@ -14,6 +14,7 @@ public class SoundInterfaceDevice : IAudioDevice
     private readonly long _CPU_HZ = 1_000_000;//1Mhz
     private long _sampleAcc;
     private readonly long _SAMPLERATE = 16_000;//16Khz
+    private static readonly IReadOnlyDictionary<int, int> SecondaryVoice = new Dictionary<int, int> { { 0, 2 }, { 1, 0 }, { 2, 1 } };
     // === IMemoryMappedDevice ===
     public ushort StartAddress => SID_BASE;
     public ushort EndAddress => 0xD41C;// TODO: Figure out if this number is correct
@@ -26,28 +27,6 @@ public class SoundInterfaceDevice : IAudioDevice
     public const ushort VOICE3_OFFSET = 0x0E;
     private const ushort VOLUME_REGISTER = 0x18;
     private const ushort CONTROL = 0x04;
-    /// <summary> Syncs with other voice.
-    /// voice 1 -> with voice 3. 
-    /// </summary>
-    public bool SyncVoice1 => (_soundMemory[CONTROL + VOICE1_OFFSET] & 0x02) != 0;
-    /// <summary> Enables ring modulation with other voice
-    /// voice 1 -> with voice 3. 
-    public bool RingModVoice1 => (_soundMemory[CONTROL + VOICE1_OFFSET] & 0x04) != 0;
-    /// <summary> Syncs with other voice.
-    /// voice 2 -> with voice 1. 
-    /// </summary>
-    public bool SyncVoice2 => (_soundMemory[CONTROL + VOICE2_OFFSET] & 0x02) != 0;
-    /// <summary> Enables ring modulation with other voice 
-    /// voice 2 -> with voice 1.  
-    /// </summary>
-    public bool RingModVoice2 => (_soundMemory[CONTROL + VOICE2_OFFSET] & 0x04) != 0;
-    /// <summary> Syncs with other voice.
-    /// voice 3 -> with voice 2.
-    /// </summary>
-    public bool SyncVoice3 => (_soundMemory[CONTROL + VOICE3_OFFSET] & 0x02) != 0;
-    /// <summary> Enables ring modulation with other voice
-    /// voice 3 -> with voice 2. 
-    /// </summary>
     public bool RingModVoice3 => (_soundMemory[CONTROL + VOICE3_OFFSET] & 0x04) != 0;
     private readonly IAudioOutput? _audioOutput;
 
@@ -94,10 +73,26 @@ public class SoundInterfaceDevice : IAudioDevice
     private void GenerateSample()
     {
         _noiseGenerator.Step();
-        foreach (var voice in _voices)
-            voice.Step(_noiseGenerator.Value);
-
+        StepVoices();
         short sample = _mixer.Step(_voices[0].Output, _voices[1].Output, _voices[2].Output, VolumeControl);
+
         _audioOutput?.RenderSample(sample);
     }
+    private void StepVoices()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            SyncVoiceAWithVoiceB(_voices, i, SecondaryVoice[i]);
+            _voices[i].Step(_noiseGenerator.Value);
+        }
+    }
+
+    private void SyncVoiceAWithVoiceB(Voice[] voices, int a, int b)
+    {
+        if (voices[a].Sync && voices[b].Overflowed)
+        {
+            voices[a].ResetPhase();
+        }
+    }
+
 }

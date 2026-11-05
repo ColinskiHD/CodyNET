@@ -14,10 +14,10 @@ public class Voice
     private const ushort ATTACK_DECAY = 0x05;
     private const ushort SUSTAIN_RELEASE = 0x06;
     private readonly byte[] _voiceMemory = new byte[0x07];
-    public ushort Output { get; private set; }
-    public Oscillator _oscillator = new();
+    public ushort Output => (ushort)(_currentWave * _envelopeGenerator.Envelope >> 16);
+    private ushort _currentWave;
+    private Oscillator _oscillator = new();
     private readonly EnvelopeGenerator _envelopeGenerator = new();
-
     public Voice(ushort baseAddress, byte[] _memory, ushort voiceOffset)
     {
         SID_BASE = baseAddress;
@@ -28,11 +28,14 @@ public class Voice
     public ushort Frequency => (ushort)((_voiceMemory[FREQ_HI + VOICE_OFFSET] << 8) | _voiceMemory[FREQ_LO + VOICE_OFFSET]);//not aquivalent to Hz
     public ushort Pwm => (ushort)((_voiceMemory[PWM_HI + VOICE_OFFSET] << 8) | _voiceMemory[PWM_LO + VOICE_OFFSET]);
 
+
+
     // === Control Bits ===
 
     /// <summary> Bit 0 ("gate") plays/ends the sound. </summary>
     public bool Gate => (_voiceMemory[CONTROL + VOICE_OFFSET] & 0x01) != 0;
-    /// <summary> Bit 3 resets the voice internally. </summary>
+    public bool Sync => (_voiceMemory[CONTROL + VOICE_OFFSET] & 0x02) != 0;
+    public bool RingMod => (_voiceMemory[CONTROL + VOICE_OFFSET] & 0x04) != 0;
     public bool Reset => (_voiceMemory[CONTROL + VOICE_OFFSET] & 0x08) != 0;
     /// <summary> Bit 4 selects a triangle wave. </summary>
     public bool Triangle => (_voiceMemory[CONTROL + VOICE_OFFSET] & 0x10) != 0;
@@ -47,6 +50,10 @@ public class Voice
     public ushort Decay => (ushort)(_voiceMemory[ATTACK_DECAY + VOICE_OFFSET] & 0x0F);//low nibble
     public ushort Sustain => (ushort)(_voiceMemory[SUSTAIN_RELEASE + VOICE_OFFSET] >> 4);//high nibble
     public ushort Release => (ushort)(_voiceMemory[SUSTAIN_RELEASE + VOICE_OFFSET] & 0x0F);//low nibble
+
+    public ushort Phase => _oscillator.Phase;
+
+    public bool Overflowed => _oscillator.Overflowed;
     public Waveform WaveformSelected =>
         Triangle ? Waveform.Triangle :
         Saw ? Waveform.Sawtooth :
@@ -57,7 +64,14 @@ public class Voice
     {
         _oscillator.Step(Frequency, WaveformSelected, noise, Pwm);
         _envelopeGenerator.Step(Attack, Decay, Sustain, Release, Gate);
-        ushort wave = _oscillator.Wave;
-        Output = (ushort)(wave * _envelopeGenerator.Envelope >> 16);
+        _currentWave = _oscillator.Wave;
     }
+    public void ResetPhase()
+    {
+        _oscillator.ResetPhase();
+    }/*
+    public void InvertWave()
+    {
+        _currentWave = (ushort)(_currentWave ^ 0xFFFF);
+    }*/
 }

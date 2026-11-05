@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using Avalonia.Metadata;
 using CodyNET.Core.Cody;
-using CodyNET.Core.Devices;//decide if .Devices.Audio is better
+using CodyNET.Core.Devices;//TODO: decide if .Devices.Audio is better
 using JetBrains.Annotations;
 using NUnit.Framework;
 

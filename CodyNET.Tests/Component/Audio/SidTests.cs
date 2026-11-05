@@ -47,6 +47,13 @@ public class SidTests
         }
     }
 
+    private void SetFrequency(SoundInterfaceDevice sid, int voiceIndex, ushort frequency)
+    {
+        ushort address = (ushort)(SID_BASE + voiceIndex * 7);
+        sid.Write(address, (byte)(frequency & 0xFF));
+        sid.Write((ushort)(address + 1), (byte)(frequency >> 8));
+
+    }
     [Test]
     public void Sid_62_Cycles_No_Sample()
     {
@@ -90,6 +97,27 @@ public class SidTests
 
         Assert.That(audioOutput.SampleCounter, Is.EqualTo(16_000));
     }
+
+    [TestCase(0, 2, TestName = "Sid_Sync_Voice1")]
+    [TestCase(1, 0, TestName = "Sid_Sync_Voice2")]
+    [TestCase(2, 1, TestName = "Sid_Sync_Voice3")]
+    public void Sid_Sync(int voiceAIndex, int voiceBIndex)
+    {
+        long cycle = 0;
+        var memory = new Memory();
+        var sid = CreateSoundInterfaceDevice(memory);
+
+        SetFrequency(sid, voiceAIndex, 0xFFFF);
+        sid.Update(cycle += 1000);//16 samples
+
+        SetFrequency(sid, voiceAIndex, 0);
+        sid.Write((ushort)(SID_BASE + 4 + voiceAIndex * 7), 0x02);
+        SetFrequency(sid, voiceBIndex, 0xFFFF);
+        sid.Update(cycle += 1000);//16 samples
+
+        Assert.That(sid.Voices[voiceAIndex].Phase, Is.EqualTo(0));
+    }
+
 
     private static SoundInterfaceDevice CreateSoundInterfaceDevice(Memory memory)
     {
