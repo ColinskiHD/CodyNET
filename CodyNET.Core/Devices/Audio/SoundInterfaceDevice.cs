@@ -27,7 +27,7 @@ public class SoundInterfaceDevice : IAudioDevice
     public const ushort VOICE3_OFFSET = 0x0E;
     private const ushort VOLUME_REGISTER = 0x18;
     private const ushort CONTROL = 0x04;
-    public bool RingModVoice3 => (_soundMemory[CONTROL + VOICE3_OFFSET] & 0x04) != 0;
+    //public bool RingModVoice3 => (_soundMemory[CONTROL + VOICE3_OFFSET] & 0x04) != 0;
     private readonly IAudioOutput? _audioOutput;
 
     private ushort VolumeControl => _soundMemory[VOLUME_REGISTER];
@@ -74,6 +74,7 @@ public class SoundInterfaceDevice : IAudioDevice
     {
         _noiseGenerator.Step();
         StepVoices();
+
         short sample = _mixer.Step(_voices[0].Output, _voices[1].Output, _voices[2].Output, VolumeControl);
 
         _audioOutput?.RenderSample(sample);
@@ -84,15 +85,21 @@ public class SoundInterfaceDevice : IAudioDevice
         {
             SyncVoiceAWithVoiceB(_voices, i, SecondaryVoice[i]);
             _voices[i].Step(_noiseGenerator.Value);
+            RingModVoiceAWithVoiceB(_voices, i, SecondaryVoice[i]);
         }
     }
-
-    private void SyncVoiceAWithVoiceB(Voice[] voices, int a, int b)
+    private static void SyncVoiceAWithVoiceB(Voice[] voices, int a, int b)
     {
         if (voices[a].Sync && voices[b].Overflowed)
         {
             voices[a].ResetPhase();
         }
     }
-
+    private static void RingModVoiceAWithVoiceB(Voice[] voices, int a, int b)
+    {
+        if (voices[a].RingMod && (voices[b].Phase & 0x8000) != 0)
+        {
+            voices[a].InvertWave();
+        }
+    }
 }

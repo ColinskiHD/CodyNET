@@ -52,6 +52,7 @@ public class Voice
     public ushort Release => (ushort)(_voiceMemory[SUSTAIN_RELEASE + VOICE_OFFSET] & 0x0F);//low nibble
 
     public ushort Phase => _oscillator.Phase;
+    public ushort Wave => _currentWave;
 
     public bool Overflowed => _oscillator.Overflowed;
     public Waveform WaveformSelected =>
@@ -69,9 +70,9 @@ public class Voice
     public void ResetPhase()
     {
         _oscillator.ResetPhase();
-    }/*
+    }
     public void InvertWave()
     {
         _currentWave = (ushort)(_currentWave ^ 0xFFFF);
-    }*/
+    }
 }
