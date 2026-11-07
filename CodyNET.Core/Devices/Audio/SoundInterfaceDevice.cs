@@ -26,8 +26,8 @@ public class SoundInterfaceDevice : IAudioDevice
     public const ushort VOICE2_OFFSET = 0x07;
     public const ushort VOICE3_OFFSET = 0x0E;
     private const ushort VOLUME_REGISTER = 0x18;
-    private const ushort CONTROL = 0x04;
-    //public bool RingModVoice3 => (_soundMemory[CONTROL + VOICE3_OFFSET] & 0x04) != 0;
+    public const ushort VOICE3_OSC = 0x1B;
+    public const ushort VOICE3_ENV = 0x1C;
     private readonly IAudioOutput? _audioOutput;
 
     private ushort VolumeControl => _soundMemory[VOLUME_REGISTER];
@@ -74,7 +74,8 @@ public class SoundInterfaceDevice : IAudioDevice
     {
         _noiseGenerator.Step();
         StepVoices();
-
+        _soundMemory[VOICE3_OSC] = (byte)(_voices[2].Wave >> 8);
+        _soundMemory[VOICE3_ENV] = (byte)(_voices[2].Envelope >> 8);
         short sample = _mixer.Step(_voices[0].Output, _voices[1].Output, _voices[2].Output, VolumeControl);
 
         _audioOutput?.RenderSample(sample);

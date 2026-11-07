@@ -14,7 +14,8 @@ public class Voice
     private const ushort ATTACK_DECAY = 0x05;
     private const ushort SUSTAIN_RELEASE = 0x06;
     private readonly byte[] _voiceMemory = new byte[0x07];
-    public ushort Output => (ushort)(_currentWave * _envelopeGenerator.Envelope >> 16);
+    public ushort Envelope => _envelopeGenerator.Envelope;
+    public ushort Output => (ushort)(_currentWave * Envelope >> 16);
     private ushort _currentWave;
     private Oscillator _oscillator = new();
     private readonly EnvelopeGenerator _envelopeGenerator = new();
