@@ -38,7 +38,7 @@ public static class CodyFactory
         {
             screen = launchScreenHost ? CreateScreen() : WaitForScreen();
             video = new VideoDevice();
-            audio = new SoundInterfaceDevice(new SDLAudioOutput());
+            audio = new SoundInterfaceDevice(new DCBlockingAudioOutput(new SDLAudioOutput()));
         }
 
         Cody cody = new(options, video, screen, audio);
