@@ -303,6 +303,7 @@
                                 <ComboBoxItem Content="D040  VID Control Bank" Tag="0xD040" />
                                 <ComboBoxItem Content="D060  VID Data Bank" Tag="0xD060" />
                                 <ComboBoxItem Content="D080  VID Sprite Banks" Tag="0xD080" />
+                                <ComboBoxItem Content="D400  Sound (SID)" Tag="0xD400" />
                                 <ComboBoxItem Content="D480  UART1" Tag="0xD480" />
                                 <ComboBoxItem Content="D4A0  UART2" Tag="0xD4A0" />
                                 <ComboBoxItem Content="E000  ROM (BASIC)" Tag="0xE000" />
