@@ -8,7 +8,7 @@ The project is based on ideas and behavior from [iTitus' Cody Emulator](https://
 
 Prerequisite: .NET SDK installed.
 
-1. Download the [latest release](https://github.com/Mimonsi/CodyNET/releases/latest) for your platform and extract it.
+1. Download the [latest release](../../releases/latest) for your platform and extract it.
 2. Execute the file by double-clicking or via command line. When no parameters are provided, the program will launch an interactive shell. Enter `help` to list available commands
 3. Enter `boot` to start the emulator with default parameters. Add the `--debug` parameter to start the integrated editor and other debugging tools.
 
