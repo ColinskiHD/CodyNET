@@ -66,6 +66,14 @@ public class EnvelopeGenerator
         }
         return amplitude - DecayRates[release];
     }
+    public void ResetState()
+    {
+        _adsrState = ADSRState.Attack;
+    }
+    public void ResetAmplitude()
+    {
+        Amplitude = 0;
+    }
 
     private enum ADSRState
     {

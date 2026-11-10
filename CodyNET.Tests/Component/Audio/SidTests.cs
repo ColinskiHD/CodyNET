@@ -163,7 +163,7 @@ public class SidTests
         var sid = CreateSoundInterfaceDevice(memory);
 
         SetFrequency(sid, voiceIndex, (ushort)frequencyValue);
-        sid.Write((ushort)(SID_BASE + CONTROL + voiceIndex * 7), 0x10);
+        sid.Write((ushort)(SID_BASE + CONTROL + voiceIndex * 7), 0x10);// set Triangle Bit
         sid.Update(cycle += 1000);
         Assume.That(sid.Voices[voiceIndex].Wave, Is.EqualTo(expectedWave));
 

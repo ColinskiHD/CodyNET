@@ -95,9 +95,9 @@ public class OscillatorTests
 
         Assert.That(osc.Wave, Is.EqualTo(expected));
     }
-    [TestCase(Waveform.Pulse, 0x0000, 0, TestName = "PWM0_Is_LOW")]
-    [TestCase(Waveform.Pulse, 0xFFFF, 0x0888, TestName = "PWM50_Is_HIGH")]
-    [TestCase(Waveform.Pulse, 0xFFFF, 0x0FFF, TestName = "PWM100_Is_HIGH")]
+    [TestCase(Waveform.Pulse, 0x0000, 0, TestName = "PWM0_Is_LOW_440Hz")]
+    [TestCase(Waveform.Pulse, 0xFFFF, 0x0888, TestName = "PWM50_Is_HIGH_440Hz")]
+    [TestCase(Waveform.Pulse, 0xFFFF, 0x0FFF, TestName = "PWM100_Is_HIGH_440Hz")]
     [TestCase(Waveform.Triangle, 3690, TestName = "Osc_440Hz_Triangle")]
     [TestCase(Waveform.Sawtooth, 1845, TestName = "Osc_440Hz_Saw")]
     public void Osc_440Hz(Waveform waveform, int expected, int pwm = 0)

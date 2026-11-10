@@ -64,6 +64,7 @@ public class Voice
         Waveform.None;
     public void Step(ushort noise)
     {
+        if (Reset) resetVoice();
         _oscillator.Step(Frequency, WaveformSelected, noise, Pwm);
         _envelopeGenerator.Step(Attack, Decay, Sustain, Release, Gate);
         _currentWave = _oscillator.Wave;
@@ -71,6 +72,13 @@ public class Voice
     public void ResetPhase()
     {
         _oscillator.ResetPhase();
+    }
+    private void resetVoice()
+    {
+        ResetPhase();
+        _envelopeGenerator.ResetAmplitude();
+        _envelopeGenerator.ResetState();
+
     }
     public void InvertWave()
     {
