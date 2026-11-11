@@ -69,6 +69,7 @@ public class Cody
         set
         {
             Cpu.CyclesPerSecond = value;
+            SID?.SetClockFrequency(value);
         }
     }
 

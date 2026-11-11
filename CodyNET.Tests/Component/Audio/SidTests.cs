@@ -93,17 +93,6 @@ public class SidTests
         Assert.That(audioOutput.SampleCounter, Is.EqualTo(2));
     }
 
-    [Test]
-    public void Sid_16_000_Samples_per_Second()
-    {
-        var audioOutput = new AudioTestOutput();
-        var sid = new SoundInterfaceDevice(audioOutput);
-
-        sid.Update(1_000_000);
-
-        Assert.That(audioOutput.SampleCounter, Is.EqualTo(16_000));
-    }
-
     [TestCase(0, 2, TestName = "Sid_Sync_Voice1")]
     [TestCase(1, 0, TestName = "Sid_Sync_Voice2")]
     [TestCase(2, 1, TestName = "Sid_Sync_Voice3")]
@@ -186,6 +175,22 @@ public class SidTests
         Assume.That(sid.Voices[voiceIndex].Envelope, Is.EqualTo(expectedEnv));
 
         Assert.That(sid.Read((ushort)address), Is.EqualTo(expectedByte));
+    }
+
+    [TestCase(100_000, TestName = "100kHz_Clock_Generates_16k_Samples")]
+    [TestCase(500_000, TestName = "500kHz_Clock_Generates_16k_Samples")]
+    [TestCase(1_000_000, TestName = "1MHz_Clock_Generates_16k_Samples")]
+    [TestCase(2_000_000, TestName = "2MHz_Clock_Generates_16k_Samples")]
+    [TestCase(5_000_000, TestName = "5MHz_Clock_Generates_16k_Samples")]
+    [TestCase(10_000_000, TestName = "10MHz_Clock_Generates_16k_Samples")]
+    public void CyclesPerSecondTest(int cylcesPerSecond)
+    {
+        var audioOutput = new AudioTestOutput();
+        var sid = new SoundInterfaceDevice(audioOutput);
+        sid.SetClockFrequency(cylcesPerSecond);
+        sid.Update(cylcesPerSecond);
+
+        Assert.That(audioOutput.SampleCounter, Is.EqualTo(16_000));
     }
 
     private static SoundInterfaceDevice CreateSoundInterfaceDevice(Memory memory)

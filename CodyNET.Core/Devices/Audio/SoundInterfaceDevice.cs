@@ -11,7 +11,7 @@ public class SoundInterfaceDevice : IAudioDevice
     public IReadOnlyList<Voice> Voices => _voices;
     private Mixer _mixer = new();
     private long _lastcycle;
-    private readonly long _CPU_HZ = 1_000_000;//1Mhz
+    private long _cpuHz = 1_000_000;//1Mhz
     private long _sampleAcc;
     private readonly long _SAMPLERATE = 16_000;//16Khz
     private static readonly IReadOnlyDictionary<int, int> SecondaryVoice = new Dictionary<int, int> { { 0, 2 }, { 1, 0 }, { 2, 1 } };
@@ -39,6 +39,10 @@ public class SoundInterfaceDevice : IAudioDevice
                    new Voice(SID_BASE, _soundMemory, VOICE2_OFFSET),
                    new Voice(SID_BASE, _soundMemory, VOICE3_OFFSET)];
     }
+    public void SetClockFrequency(long cyclesPerSecond)
+    {
+        _cpuHz = cyclesPerSecond;
+    }
     public Interrupt Update(long cycle)
     {
         var delta = cycle - _lastcycle;
@@ -48,9 +52,9 @@ public class SoundInterfaceDevice : IAudioDevice
             return Interrupt.None;
         }
         _sampleAcc += delta * _SAMPLERATE;
-        while (_sampleAcc >= _CPU_HZ)
+        while (_sampleAcc >= _cpuHz)
         {
-            _sampleAcc -= _CPU_HZ;
+            _sampleAcc -= _cpuHz;
             GenerateSample();
         }
         return Interrupt.None;
