@@ -7,7 +7,8 @@ using Serilog.Formatting.Display;
 public class DCBlockingAudioOutput : IAudioOutput
 {
     private readonly IAudioOutput? _audioOutput;
-    private double _previousInput, _previousOutput;
+    private double _previousInput = short.MinValue;
+    private double _previousOutput;
     private const double P = 0.995;
     private const double MIN = short.MinValue;
     private const double MAX = short.MaxValue;
