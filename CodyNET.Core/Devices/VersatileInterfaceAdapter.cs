@@ -59,12 +59,12 @@ public class KeyState
 
     public KeyState()
     {
-        for(int i = 0;i < State.Length; i++)
+        for (int i = 0; i < State.Length; i++)
         {
             State[i] = 0xF8; // Unpressed keys read as 1.
         }
     }
-    
+
     /// <summary>
     /// Set a key as currently pressed
     /// </summary>
@@ -73,7 +73,7 @@ public class KeyState
     public void SetPressed(CodyKeyCode code, bool pressed)
     {
         byte c = (byte)code;
-        
+
         int bit = (c % 5) + 3;   // Bits 3..7
         int index = c / 5;       // 0..7 (for 0..39)
 
@@ -83,7 +83,7 @@ public class KeyState
         // pressed -> clear bit
         // released -> set bit
         if (pressed) State[index] = (byte)(State[index] & ~mask);
-        else         State[index] = (byte)(State[index] |  mask);
+        else State[index] = (byte)(State[index] | mask);
     }
 }
 
@@ -123,10 +123,10 @@ public class VersatileInterfaceAdapter(KeyState keyState) : IMemoryMappedDevice
     private const ushort VIA_IER = 0x0E;
     // VIA IORA NO HANDSHAKE
     private const ushort VIA_IORA_NOHS = 0x0F;
-    
+
     private const byte IFR_TIMER1 = 0x40;
     private const byte IFR_TIMER2 = 0x20;
-    
+
     private readonly byte[] _registers = new byte[16];
 
     private long _lastUpdateCycle;
@@ -146,10 +146,6 @@ public class VersatileInterfaceAdapter(KeyState keyState) : IMemoryMappedDevice
     public ushort EndAddress { get; } = VIA_BASE + 0x0F;
     public bool SupportsRead { get; } = true;
     public bool SupportsWrite { get; } = true;
-    
-    private int timer1Counter;
-    private ushort timer1Latch;
-    private long lastCycle;
 
     /// <summary>
     /// Returns current state of keyboard
@@ -181,10 +177,10 @@ public class VersatileInterfaceAdapter(KeyState keyState) : IMemoryMappedDevice
     private void SetIfr(byte ifr)
     {
         ifr = (byte)(ifr & 0x7F);
-        
+
         if ((ifr & _ier) != 0)
             ifr |= 0x80; // Set bit 7 if any enabled interrupts are active.
-        
+
         _ifr = ifr;
     }
 
@@ -225,7 +221,7 @@ public class VersatileInterfaceAdapter(KeyState keyState) : IMemoryMappedDevice
             _ => 0
         };
     }
-    
+
     /// <summary>
     /// Read Timer 1 Counter Low, which also clears the Timer 1 interrupt flag in the IFR.
     /// </summary>
@@ -319,12 +315,12 @@ public class VersatileInterfaceAdapter(KeyState keyState) : IMemoryMappedDevice
                 if (_t1Enabled)
                 {
                     SetIfr((byte)(_ifr | IFR_TIMER1)); // Timer1 flag
-                    
+
                     // ACR bit6: continuous? -> Disable timer if not continuous, otherwise reload from latch.
                     if ((acr & 0x40) == 0)
                         _t1Enabled = false;
                 }
-                
+
                 // Reload from latch
                 _t1Counter = (ushort)(_t1LatchLo | (_t1LatchHi << 8));
 
@@ -333,7 +329,7 @@ public class VersatileInterfaceAdapter(KeyState keyState) : IMemoryMappedDevice
                     // TODO: PB7 toggling
                 }
             }
-            
+
             // Timer2
             if ((acr & 0x20) != 0)
             {
