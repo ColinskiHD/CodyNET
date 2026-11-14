@@ -15,6 +15,7 @@ public class EnvelopeGenerator
     public int Amplitude { get; private set; }
     public ushort Envelope => (ushort)(Amplitude >> 8);
     private ADSRState _adsrState = ADSRState.Release;
+    public bool BugCompatibleSustain { get; init; } = true;
     public void Step(ushort attack, ushort decay, ushort sustain, ushort release, bool gate)
     {
         if (gate & _adsrState == ADSRState.Release)
@@ -51,7 +52,9 @@ public class EnvelopeGenerator
     }
     private int Decay(int amplitude, int decay, int sustain)
     {
-        int sustainLevel = MAX_LEVEL * sustain / 15;
+        int sustainLevel = BugCompatibleSustain
+            ? MAX_LEVEL * sustain
+            : MAX_LEVEL * sustain / 15;
         if (amplitude <= sustainLevel)
         {
             return amplitude;

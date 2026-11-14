@@ -14,7 +14,7 @@ public class EnvelopeGeneratorTests
 
     private static EnvelopeGenerator DecayStateEnvelope()
     {
-        var envelopeGenerator = new EnvelopeGenerator();
+        var envelopeGenerator = new EnvelopeGenerator { BugCompatibleSustain = false };
 
         for (int i = 0; i <= 32; i++)
         {
