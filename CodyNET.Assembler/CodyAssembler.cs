@@ -27,7 +27,7 @@ public static class CodyAssembler
         }
         var preFile = FileUtils.GetWithChangedExtension(inputFile, "_pre.asm");
         CodyPreprocessor.PreprocessFile(inputFile, preFile);
-        TassAssembler.AssembleFile(preFile, outputFile);
+        TassAssembler.AssembleFile(preFile, inputFile, outputFile);
         return outputFile;
     }
 
@@ -37,7 +37,7 @@ public static class CodyAssembler
     /// for translating those pre-asm line numbers to original editor line numbers.
     /// </summary>
     public static (FileInfo Output, Dictionary<ushort, int> AddressToPreLine) AssembleFileWithMap(
-        FileInfo inputFile, FileInfo? outputFile = null)
+        FileInfo inputFile, FileInfo originalAssemblyFile, FileInfo? outputFile = null)
     {
         if (!inputFile.Exists)
             throw new FileNotFoundException("Input file does not exist", inputFile.FullName);
@@ -48,7 +48,7 @@ public static class CodyAssembler
         var listFile = FileUtils.GetWithChangedExtension(preFile,   ".lst");
 
         CodyPreprocessor.PreprocessFile(inputFile, preFile);
-        TassAssembler.AssembleFile(preFile, outputFile, listFile);
+        TassAssembler.AssembleFile(preFile, originalAssemblyFile, outputFile, listFile);
 
         var addressToPreLine = ParseListingFile(listFile, preFile);
         return (outputFile, addressToPreLine);

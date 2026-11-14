@@ -498,7 +498,7 @@ public static class Cli
                 ?? throw new ArgumentException("Missing input file argument.");
 
             ExecuteAssembleCommand(
-                inputFile,
+                inputFile, 
                 parseResult.GetValue(output));
             return 0;
         });
@@ -507,7 +507,7 @@ public static class Cli
     }
 
     private static void ExecuteAssembleCommand(
-        FileInfo inputFile,
+        FileInfo inputFile, 
         FileInfo? outputFile)
     {
         outputFile = CodyAssembler.AssembleFile(inputFile, outputFile);

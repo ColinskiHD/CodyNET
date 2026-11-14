@@ -19,7 +19,7 @@ internal static class TassAssembler
         /// depending on the 64tass version/syntax you use.
         /// If you do not need explicit selection, pass empty string.
 
-        internal static void AssembleFile(FileInfo inputFile, FileInfo? outputFile = null, FileInfo? listFile = null)
+        internal static void AssembleFile(FileInfo inputFile, FileInfo originalAssemblyFile, FileInfo? outputFile = null, FileInfo? listFile = null)
         {
             //inputFile = EnsureUtf8WithoutBom(inputFile);
             
@@ -36,6 +36,7 @@ internal static class TassAssembler
             //   64tass input.asm -o out.bin --output out.bin --format raw
             //
             // We'll use a conservative approach: "-o" for output + "raw/binary format" switch.
+
             var args = new StringBuilder();
 
             // CPU switch (optional)
@@ -44,6 +45,12 @@ internal static class TassAssembler
                 args.Append(_args);
                 args.Append(' ');
             }
+
+            // Set include search path to original file folder
+            args.Append("-I "); 
+            args.Append('"').Append(Path.GetDirectoryName(originalAssemblyFile.FullName)).Append('"');
+            args.Append(' ');
+
 
             // Output file
             args.Append("-o ");
@@ -88,6 +95,8 @@ internal static class TassAssembler
             string stdout = stdoutTask.Result;
             string stderr = stderrTask.Result;
 
+
+            Log.Info("Executing: {executable} {args}", _tassPath, args.ToString());
             Log.Info("64tass output: {output}", stdout);
             if (!string.IsNullOrEmpty(stderr))
             {

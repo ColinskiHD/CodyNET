@@ -58,7 +58,8 @@ public partial class MainWindow : Window
     private readonly Dictionary<int, bool> _codeEditorBreakpointLines = new();
     private Dictionary<ushort, int> _addressToSourceLine = new();
     private List<string> _codeLines = [];
-    
+    private FileInfo originalAssemblyFile;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -969,11 +970,14 @@ public partial class MainWindow : Window
         if (path == null)
             return;
 
-        LoadAssemblyIntoEditor(new FileInfo(path));
+        // save path of original (unmodified) asm file for later tass actions like include paths
+        originalAssemblyFile = new FileInfo(path);
+        LoadAssemblyIntoEditor(originalAssemblyFile);
     }
     
     private void LoadAssemblyIntoEditor(FileInfo fileInfo)
     {
+        Log.Info("LoadAssemblyIntoEditor: {input}", Path.GetFullPath(fileInfo.FullName));
         if (!IsAssemblySourceFile(fileInfo))
         {
             MessageBox("Unsupported File", "Please choose a .asm file.");
@@ -1098,7 +1102,7 @@ public partial class MainWindow : Window
         var inputFile = new FileInfo("editor.asm");
         File.WriteAllText(inputFile.FullName, string.Join("\n", finalCode));
 
-        var (_, addressToPreLine) = CodyAssembler.AssembleFileWithMap(inputFile);
+        var (_, addressToPreLine) = CodyAssembler.AssembleFileWithMap(inputFile, originalAssemblyFile);
 
         // Combine: address -> pre.asm line -> original editor line
         _addressToSourceLine = new Dictionary<ushort, int>();
