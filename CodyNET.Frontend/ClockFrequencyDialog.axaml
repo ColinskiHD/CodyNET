@@ -27,7 +27,7 @@
                    FontSize="13" />
 
         <TextBox x:Name="FrequencyInput"
-                 Watermark="e.g.  3.5 MHz,  500 kHz,  3500000"
+                 PlaceholderText="e.g.  3.5 MHz,  500 kHz,  3500000"
                  FontFamily="Cascadia Mono, Consolas, monospace"
                  FontSize="14"
                  Background="#2B292E"
