@@ -13,4 +13,8 @@
       <ProjectReference Include="..\CodyNET.Disassembler\CodyNET.Disassembler.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Update="Nerdbank.GitVersioning" Version="3.10.94" />
+    </ItemGroup>
+
 </Project>

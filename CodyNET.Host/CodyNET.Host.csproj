@@ -9,13 +9,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="System.CommandLine" Version="3.0.0-preview.1.26104.118" />
+      <PackageReference Include="System.CommandLine" Version="3.0.0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\CodyNET.Common\CodyNET.Common.csproj" />
       <ProjectReference Include="..\CodyNET.Core\CodyNET.Core.csproj" />
       <ProjectReference Include="..\CodyNET.Frontend\CodyNET.Frontend.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="Nerdbank.GitVersioning" Version="3.10.94" />
     </ItemGroup>
 
 </Project>
