@@ -15,7 +15,6 @@ public class SidTests
     private const ushort CONTROL = 0x04;
     private const ushort ATTACK_DECAY = 0x05;
     private const ushort SUSTAIN_RELEASE = 0x06;
-    private SoundInterfaceDevice _sid = null!;
 
     [Test]
     public void Sid_RegisterWriteRead()
