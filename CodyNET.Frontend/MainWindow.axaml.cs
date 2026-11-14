@@ -91,7 +91,7 @@ public partial class MainWindow : Window
         CodeEditorTextBox.TextArea.TextView.BackgroundRenderers.Add(_currentLineRenderer);
     }
 
-    private string _fullVersionText;
+    private string _fullVersionText = "";
 
     private void InitUi()
     {
@@ -1166,7 +1166,7 @@ public partial class MainWindow : Window
             _codeEditorBreakpointLines.Remove(lineNumber);
             RefreshBreakpointsPanel();
         }
-        catch (Exception _)
+        catch (Exception)
         {
             // ignored
         }
