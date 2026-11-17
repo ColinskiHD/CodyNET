@@ -1,5 +1,5 @@
 using CodyNET.Core.Cody;
-using CodyNET.Core.Devices;//decide if .Devices.Audio is better
+using CodyNET.Core.Devices.Audio;
 using CodyNET.Core.Interfaces;
 using NUnit.Framework;
 

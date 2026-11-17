@@ -1,5 +1,7 @@
 using CodyNET.Core.Devices.Audio;
 using Serilog.Formatting.Display;
+namespace CodyNET.Core.Devices.Audio;
+
 public class Voice
 {
     private const ushort registerSize = 0x07;

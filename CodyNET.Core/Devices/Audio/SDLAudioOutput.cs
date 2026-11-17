@@ -23,10 +23,10 @@
 /*this class contains modified code from Eduard Gushin*/
 #endregion
 using SDL3;
+using CodyNET.Core.Interfaces;
+
 namespace CodyNET.Core.Devices.Audio;
 
-using System;
-using CodyNET.Core.Interfaces;
 
 public class SDLAudioOutput : IAudioOutput
 {

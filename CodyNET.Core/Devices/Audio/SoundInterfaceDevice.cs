@@ -1,11 +1,11 @@
 using CodyNET.Core.Cody;
-using CodyNET.Core.Devices.Audio;
 using CodyNET.Core.Interfaces;
+namespace CodyNET.Core.Devices.Audio;
 
 public class SoundInterfaceDevice : IAudioDevice
 {
     // Store sound memory locally in the device, for easy access
-    private readonly byte[] _soundMemory = new byte[0x100];// TODO: check if length is correct
+    private readonly byte[] _soundMemory = new byte[0x100];
     private readonly Voice[] _voices;
     private readonly NoiseGenerator _noiseGenerator = new();
     public IReadOnlyList<Voice> Voices => _voices;
@@ -17,7 +17,7 @@ public class SoundInterfaceDevice : IAudioDevice
     private static readonly IReadOnlyDictionary<int, int> SecondaryVoice = new Dictionary<int, int> { { 0, 2 }, { 1, 0 }, { 2, 1 } };
     // === IMemoryMappedDevice ===
     public ushort StartAddress => SID_BASE;
-    public ushort EndAddress => 0xD41C;// TODO: Figure out if this number is correct
+    public ushort EndAddress => 0xD41C;
     public bool SupportsRead => true;
     public bool SupportsWrite => true;
     // === Address Constants ===
@@ -64,7 +64,7 @@ public class SoundInterfaceDevice : IAudioDevice
     {
         if (address < StartAddress || address > EndAddress)
             throw new ArgumentOutOfRangeException(nameof(address), $"Address {address:X4} is out of range for SID device.");
-        return _soundMemory[address - StartAddress]; // TODO: Figure out which registers can be read
+        return _soundMemory[address - StartAddress];
     }
 
     public void Write(ushort address, byte value)
@@ -72,7 +72,6 @@ public class SoundInterfaceDevice : IAudioDevice
         if (address < StartAddress || address > EndAddress)
             throw new ArgumentOutOfRangeException(nameof(address), $"Address {address:X4} is out of range for SID device.");
         _soundMemory[address - StartAddress] = value;
-        //Dirty = true;
     }
     private void GenerateSample()
     {

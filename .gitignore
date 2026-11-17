@@ -49,3 +49,7 @@ logs/
 /editor.bin
 /editor._pre.asm
 /editor._pre.lst
+
+# Coverage
+coverage-report/
+TestResults/

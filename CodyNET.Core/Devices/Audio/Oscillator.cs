@@ -1,22 +1,4 @@
-/*this class implements parts of the following cody_audio.spin logic:
-            make_wave
-                ' Combine frequency into 16 bit number
-                ' Shift by 2 because frequency * 4000 / 16 KHz sample rate
-                mov     freq_coefficient, voice_freq_h
-                shl     freq_coefficient, #8
-                or      freq_coefficient, voice_freq_l
-                shr     freq_coefficient, #2
-                
-                 ' Calculate next phase
-                mov     temp_phase, phase
-                add     temp_phase, freq_coefficient
-                
-                ' If we overflowed, set our internal sync bit to apply later
-                testn   temp_phase, MASK_16                 wz
-                muxnz   sync, #$02
-*/
-using System.Runtime.CompilerServices;
-using CodyNET.Core.Devices.Audio;
+namespace CodyNET.Core.Devices.Audio;
 
 public class Oscillator
 {
