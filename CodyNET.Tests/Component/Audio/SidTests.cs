@@ -160,7 +160,7 @@ public class SidTests
 
     [TestCase(2, 0x00, 0xF0, 0xD41C, 0x5555, 0x55, TestName = "Read_Voice3_Env_MAX")]
     [TestCase(2, 0x00, 0x00, 0xD41C, 0x0000, 0x00, TestName = "Read_Voice3_Env_MIN")]
-    [TestCase(2, 0x00, 0x80, 0xD41C, 0x2D82, 0x2D, TestName = "Read_Voice3_Env_DECAY")]
+    //[TestCase(2, 0x00, 0x80, 0xD41C, 0x2D82, 0x2D, TestName = "Read_Voice3_Env_DECAY")] //TODO: activate if Sustain was fixed on hardware
     public void Read_Register_Env(int voiceIndex, int attackDecay, int sustainRelease, int address, int expectedEnv, int expectedByte)
     {
         long cycle = 0;

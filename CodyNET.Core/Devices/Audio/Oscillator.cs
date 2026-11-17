@@ -93,3 +93,11 @@ public class Oscillator
         Phase = 0;
     }
 }
+public enum Waveform
+{
+    None,
+    Triangle,
+    Sawtooth,
+    Pulse,
+    Noise
+}
