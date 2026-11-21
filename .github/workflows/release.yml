@@ -68,6 +68,9 @@ jobs:
           - rid: osx-arm64
             artifact_suffix: macos-arm64
             archive_ext: tar.gz
+          - rid: osx-x64
+            artifact_suffix: macos-x64
+            archive_ext: tar.gz
 
     steps:
       - name: Checkout
