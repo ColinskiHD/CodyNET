@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "interactive": {
+      "commandName": "Project",
+      "commandLineArgs": "--interactive"
+    },
+    "boot --debug": {
+      "commandName": "Project",
+      "commandLineArgs": "boot --debug"
+    }
+  }
+}
