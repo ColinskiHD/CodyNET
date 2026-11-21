@@ -103,11 +103,11 @@ public partial class MainWindow : Window
         ToolTip.SetTip(FooterVersionText, _fullVersionText);
         SetCodePanelState(null, null);
     }
-    
+
     private void OnOpened(object? sender, EventArgs e)
     {
         screen?.Focus();
-        
+
         // Set buttons visible only if debug mode is enabled. Debug UI can also be disabled while debug mode is on
         var debugMode = FrontendHostBridge.DebugMode;
         DebugMenu.IsVisible = debugMode;
@@ -140,7 +140,7 @@ public partial class MainWindow : Window
         Log.Info("Main window closed. Exiting application.");
         Environment.Exit(0);
     }
-    
+
     private void InitializeScreen()
     {
         screen = this.FindControl<ScreenControl>("Screen");
@@ -359,7 +359,7 @@ public partial class MainWindow : Window
                 // CodeEditorTextBox.TextArea.Caret.Line   = newLine.Value;
                 // CodeEditorTextBox.TextArea.Caret.Column = 1;
                 // CodeEditorTextBox.TextArea.Caret.BringCaretToView();
-                
+
                 CodeEditorTextBox.ScrollToLine(newLine.Value);
             }
         }
@@ -418,7 +418,7 @@ public partial class MainWindow : Window
                 EmulatorStepButton.IsEnabled = true;
                 break;
         }
-        
+
         if (status.ProfilerSnapshot == null)
             return;
         var actualFrequencyText = Unit.FormatSi(status.ProfilerSnapshot.ActualFrequency, "Hz");
@@ -471,7 +471,7 @@ public partial class MainWindow : Window
             screen.ScaleFactor = scale;
         }
     }
-    
+
     private static readonly string[] RenderModes = ["None", "LowQuality", "MediumQuality", "HighQuality"];
 
     private void OnRenderModeClick(object? sender, RoutedEventArgs e)
@@ -524,7 +524,7 @@ public partial class MainWindow : Window
                     },
                 ]
             });
-        
+
         if (files.Count == 0)
             return;
 
@@ -536,7 +536,7 @@ public partial class MainWindow : Window
         //UpdateCodePanel(fileInfo);
         FrontendHostBridge.LoadUartSource(fileInfo);
     }
-    
+
     private void MessageBox(string title, string message)
     {
         Dispatcher.UIThread.InvokeAsync(async () =>
@@ -544,7 +544,7 @@ public partial class MainWindow : Window
             await MessageBoxManager.GetMessageBoxStandard(title, message).ShowAsPopupAsync(this);
         });
     }
-    
+
     private void OnClockMenuClick(object? sender, RoutedEventArgs e)
     {
         if (sender is not MenuItem menuItem)
@@ -633,7 +633,7 @@ public partial class MainWindow : Window
             return;
         FrontendHostBridge.SetRunState(1);
     }
-    
+
     private List<Key> DebuggerControlKeys = new() { Key.F8, Key.F9 };
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
@@ -673,7 +673,7 @@ public partial class MainWindow : Window
             Log.Error(x.ToString());
         }
     }
-    
+
     private void OnKeyUp(object? sender, KeyEventArgs e)
     {
         if (DebuggerControlKeys.Contains(e.Key))
@@ -942,7 +942,7 @@ public partial class MainWindow : Window
         _codeEditorBreakpointLines.Remove(line);
         RefreshBreakpointsPanel();
     }
-    
+
     private async void OnLoadAssemblyClick(object? sender, RoutedEventArgs e)
     {
         var files = await StorageProvider.OpenFilePickerAsync(
@@ -974,7 +974,7 @@ public partial class MainWindow : Window
         originalAssemblyFile = new FileInfo(path);
         LoadAssemblyIntoEditor(originalAssemblyFile);
     }
-    
+
     private void LoadAssemblyIntoEditor(FileInfo fileInfo)
     {
         Log.Info("LoadAssemblyIntoEditor: {input}", Path.GetFullPath(fileInfo.FullName));
@@ -995,7 +995,7 @@ public partial class MainWindow : Window
             MessageBox("Load Error", $"Could not read source file:\n{fileInfo.FullName}");
             return;
         }
-        
+
         _codeEditorBreakpointLines.Clear();
 
         var codeLinesProcessed = new List<string>();
@@ -1030,7 +1030,7 @@ public partial class MainWindow : Window
         CompileAssemblyButton.IsEnabled = true;
         SendAssemblyOverUartButton.IsEnabled = false;
     }
-    
+
     private void SetCodePanelState(string? fileName, string? sourceText)
     {
         var hasFile = !string.IsNullOrWhiteSpace(fileName);
@@ -1041,14 +1041,14 @@ public partial class MainWindow : Window
             ? BuildCodePanelFileLabel(fileName!, sourceText)
             : "No .asm file loaded";
     }
-    
+
     private string BuildCodePanelFileLabel(string fileName, string? sourceText)
     {
         var dirtySuffix = _isAssemblyDirty ? " *" : string.Empty;
         var lineCount = CountLines(sourceText);
         return $"{fileName}{dirtySuffix}  •  {lineCount} lines";
     }
-    
+
     private static int CountLines(string? text)
     {
         if (string.IsNullOrEmpty(text))
@@ -1102,7 +1102,17 @@ public partial class MainWindow : Window
         var inputFile = new FileInfo("editor.asm");
         File.WriteAllText(inputFile.FullName, string.Join("\n", finalCode));
 
-        var (_, addressToPreLine) = CodyAssembler.AssembleFileWithMap(inputFile, originalAssemblyFile);
+        Dictionary<ushort, int> addressToPreLine;
+        try
+        {
+            (_, addressToPreLine) = CodyAssembler.AssembleFileWithMap(inputFile, originalAssemblyFile);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Could not assemble source");
+            MessageBox("Assemble Error", $"Could not assemble source:\n{ex.Message}");
+            return;
+        }
 
         // Combine: address -> pre.asm line -> original editor line
         _addressToSourceLine = new Dictionary<ushort, int>();
@@ -1134,7 +1144,7 @@ public partial class MainWindow : Window
         _codeLines = sourceText.Split('\n').Select(l => l.TrimEnd('\r')).ToList();
         SetCodePanelState(GetLoadedAssemblyFileName(), sourceText);
     }
-    
+
     private string GetLoadedAssemblyFileName()
     {
         if (string.IsNullOrWhiteSpace(_loadedAssemblyPath))
