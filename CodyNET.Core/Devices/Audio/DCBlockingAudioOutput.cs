@@ -1,8 +1,4 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using CodyNET.Core.Devices.Audio;
 using CodyNET.Core.Interfaces;
-using Serilog.Formatting.Display;
 
 namespace CodyNET.Core.Devices.Audio;
 
